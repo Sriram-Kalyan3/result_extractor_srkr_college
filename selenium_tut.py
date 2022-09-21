@@ -4,16 +4,7 @@ from selenium.webdriver.common.by import By
 from scrapper import Scrapper
 import time
 
-chrome_driver = r'./driver/chromedriver.exe'
-options = webdriver.ChromeOptions()
-options.add_argument('--ignore-certificate-errors')
-options.add_argument('--incognito')
-# options.add_argument('--headless')
-
-driver = webdriver.Chrome(chrome_driver, options=options)
-
-
-def get_student_result(regd_no, subject_list):
+def get_student_result(driver, regd_no, subject_list):
     driver.get('http://www.srkrexams.in/Result.aspx?Id=2402')
     time.sleep(2)
 
@@ -39,23 +30,34 @@ def get_student_result(regd_no, subject_list):
 
     return subject_list, marks_list
 
-with open('students_list.txt','r') as input_file:
-    # output_csv_filename = input('Enter the output csv filename : ') + '.csv'
-    output_csv_filename = 'output.csv'
-    subjects = []
+def initialize_result_extract():
+    
+    output_csv_filename = input('Enter the output csv filename : ') + '.csv'
+    
+    chrome_driver = r'./driver/chromedriver.exe'
+    options = webdriver.ChromeOptions()
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--incognito')
+    # options.add_argument('--headless')
 
-    with open(output_csv_filename,'w', newline='', encoding='utf-8') as output_file:
-        csv_writer = csv.writer(output_file)
+    driver = webdriver.Chrome(chrome_driver, options=options)
 
-        is_row_header = True
+    with open('students_list.txt','r') as input_file:
+        # output_csv_filename = 'output.csv'
+        subjects = []
 
-        for regd_num in input_file.readlines():
-            subjects, marks_list = get_student_result(regd_num.rstrip(), subjects)
-            if is_row_header:
-                csv_writer.writerow(subjects)
-                is_row_header = False
-                
-            csv_writer.writerow(marks_list)
-                
-            print(marks_list)
+        with open(output_csv_filename,'w', newline='', encoding='utf-8') as output_file:
+            csv_writer = csv.writer(output_file)
+
+            is_row_header = True
+
+            for regd_num in input_file.readlines():
+                subjects, marks_list = get_student_result(driver, regd_num.rstrip(), subjects)
+                if is_row_header:
+                    csv_writer.writerow(subjects)
+                    is_row_header = False
+                    
+                csv_writer.writerow(marks_list)
+                    
+                print(marks_list)
 

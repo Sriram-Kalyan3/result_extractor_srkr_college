@@ -4,10 +4,7 @@ from selenium.webdriver.common.by import By
 from scrapper import Scrapper
 import time
 
-# Keys is used to overwrite the input value of the roll number field instead of appending
-# from selenium.webdriver.common.keys import Keys
-
-chrome_driver = r'C:\Users\Sriram Kalyan\Documents\Python\csv_scrapper\driver\chromedriver.exe'
+chrome_driver = r'./driver/chromedriver.exe'
 options = webdriver.ChromeOptions()
 options.add_argument('--ignore-certificate-errors')
 options.add_argument('--incognito')
@@ -28,7 +25,7 @@ def get_student_result(regd_no, subject_list):
     # regd_number_webElement.sendKeys(Keys.chord(Keys.CONTROL, "a"), regd_no)
     regd_number_webElement.send_keys(regd_no)
     getresult_button.click()
-    print('='*50)
+    print('='*100)
     sc = Scrapper(driver.page_source)
     if not subject_list:
         subject_list = ['Registerd No']+sc.get_subject(1)+sc.get_subject(2)+sc.get_subject(3)+ \

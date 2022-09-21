@@ -1,2 +1,3 @@
-/driver
 /__pycache__
+.output
+.students_list

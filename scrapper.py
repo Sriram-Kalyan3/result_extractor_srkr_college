@@ -12,19 +12,19 @@ class Scrapper():
     def get_subject(self, subject_num='1'):
         s = self.soup.find('span', id= 'ContentPlaceHolder1_dgvStudentHistory_lblPName_{}'.format(subject_num))
         if s is None:
-            return []
+            return ['']
         return [s.text]
 
     def get_subject_marks(self,marks_num='1'):
         s = self.soup.find('span', id= 'ContentPlaceHolder1_dgvStudentHistory_lblGrade_{}'.format(marks_num))
         if s is None:
-            return []
+            return ['']
         return [s.text]
     
     def get_sgpa(self):
         s = self.soup.find('span', id= 'ContentPlaceHolder1_gvSGPA_CGPA_lblSgap_0')
         if s is None:
-            return []
+            return ['']
         return [s.text]
 
     def get_cgpa(self):

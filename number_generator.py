@@ -35,7 +35,7 @@ def number_generate():
     with open("students_list.txt", 'w') as file:
         yn = input(
             'Check the numbers generated above. Do you really want to continue to get the result (y/n) : ')
-        if yn != 'y' or yn != 'Y':
+        if yn != 'y':
             print('Numbers generation stopped')
             sys.exit(0)
         for regd_no in regd_list:

@@ -1,3 +1,4 @@
+import datetime
 from number_generator import number_generate
 from selenium_tut import *
 import time
@@ -11,4 +12,5 @@ if numbers_generted_or_not is not None:
     initialize_result_extract(result_url)
 
 end = time.time()
-print('Completed job in ', int(end-start*1000), 'seconds')
+print('Completed job in ', str(
+    datetime.timedelta(seconds=end-start)), '[H:M:S]')

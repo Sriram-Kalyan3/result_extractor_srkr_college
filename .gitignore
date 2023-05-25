@@ -1,4 +1,6 @@
 /__pycache__
 /students_list.txt
-/test.csv
-/test2.csv
+
+# Temporary files
+*.csv
+*.xlsx

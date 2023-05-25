@@ -5,7 +5,7 @@ from scrapper import Scrapper
 import time
 
 
-def get_student_result(driver, regd_no, subject_list, result_url):
+def get_student_result(driver, regd_no, result_url):
     driver.get(result_url)
     time.sleep(1.2)
 
@@ -21,18 +21,28 @@ def get_student_result(driver, regd_no, subject_list, result_url):
     getresult_button.click()
     print('='*100)
     sc = Scrapper(driver.page_source)
-    if not subject_list:
-        subject_list = ['Registerd No']+sc.get_subject(1)+sc.get_subject(2)+sc.get_subject(3) + \
-            sc.get_subject(4)+sc.get_subject(5)+sc.get_subject(6) + sc.get_subject(7) + \
-            sc.get_subject(8)+sc.get_subject(9) + \
-            sc.get_subject(10)+['SGPA', 'CGPA']
+
+    subject_list = ['Registerd No']+sc.get_subject(1)+sc.get_subject(2)+sc.get_subject(3) + \
+        sc.get_subject(4)+sc.get_subject(5)+sc.get_subject(6) + sc.get_subject(7) + \
+        sc.get_subject(8)+sc.get_subject(9) + \
+        sc.get_subject(10)+['SGPA', 'CGPA']
 
     marks_list = sc.student_reg_num() + sc.get_subject_marks(1) + sc.get_subject_marks(2) + \
         sc.get_subject_marks(3) + sc.get_subject_marks(4) + sc.get_subject_marks(5) + \
         sc.get_subject_marks(6) + sc.get_subject_marks(7) + sc.get_subject_marks(8) + sc.get_subject_marks(9) + \
         sc.get_subject_marks(10) + sc.get_sgpa() + sc.get_cgpa()
 
-    return subject_list, marks_list
+    single_person_result_dict = {}
+    for (subject, marks) in zip(subject_list, marks_list):
+        single_person_result_dict[subject] = marks
+
+    return (subject_list, marks_list, single_person_result_dict)
+
+
+def merge_subjects(merge_into_list, merge_from_list):
+    for from_item in merge_from_list:
+        if from_item not in merge_into_list:
+            merge_into_list.insert(-2, from_item)
 
 
 def initialize_result_extract(result_url):
@@ -49,20 +59,17 @@ def initialize_result_extract(result_url):
 
     with open('students_list.txt', 'r') as input_file:
         # output_csv_filename = 'output.csv'
-        subjects = []
+        subjects = ['Registerd No', 'SGPA', 'CGPA']
+        all_students_results_dict_list = []
 
+        for regd_num in input_file.readlines():
+            temp_subjects, marks_list, single_person_result_dict = get_student_result(
+                driver, regd_num.rstrip(), result_url)
+            merge_subjects(subjects, temp_subjects)
+            all_students_results_dict_list.append(single_person_result_dict)
+            print(single_person_result_dict)
+        subjects[1:-2] = sorted(subjects[1:-2])
         with open(output_csv_filename, 'w', newline='', encoding='utf-8') as output_file:
-            csv_writer = csv.writer(output_file)
-
-            is_row_header = True
-
-            for regd_num in input_file.readlines():
-                subjects, marks_list = get_student_result(
-                    driver, regd_num.rstrip(), subjects, result_url)
-                if is_row_header:
-                    csv_writer.writerow(subjects)
-                    is_row_header = False
-
-                csv_writer.writerow(marks_list)
-
-                print(marks_list)
+            csv_writer = csv.DictWriter(output_file, fieldnames=subjects)
+            csv_writer.writeheader()
+            csv_writer.writerows(all_students_results_dict_list)

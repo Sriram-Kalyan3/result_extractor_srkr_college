@@ -1,4 +1,6 @@
 import csv
+import os
+from openpyxl import Workbook
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from scrapper import Scrapper
@@ -73,3 +75,13 @@ def initialize_result_extract(result_url):
             csv_writer = csv.DictWriter(output_file, fieldnames=subjects)
             csv_writer.writeheader()
             csv_writer.writerows(all_students_results_dict_list)
+
+        # To save the csv file in excel workbook format(.xlsx)
+        wb = Workbook()
+        ws = wb.active
+        with open(output_csv_filename, 'r') as csv_out_file:
+            reader = csv.reader(csv_out_file, delimiter=',')
+            for row in reader:
+                ws.append(row)
+        wb.save(output_csv_filename[:-4]+'.xlsx')
+        os.remove(output_csv_filename)
